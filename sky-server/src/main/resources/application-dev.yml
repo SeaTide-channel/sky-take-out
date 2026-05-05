@@ -8,6 +8,6 @@ sky:
     password: 8179145355932
   alioss:
     endpoint: oss-cn-guangzhou.aliyuncs.com
-    access-key-id:
-    access-key-secret:
+    access-key-id: LTAI5t5ZhFVZ2BDnbRDZyLEm
+    access-key-secret: CD1gNG45HO8A1u1wZeydRx021dDGAC
     bucket-name: seatide-sky-take-out
