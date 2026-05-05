@@ -8,7 +8,6 @@ import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.*;
 
-import java.awt.*;
 import java.util.List;
 
 @Mapper
@@ -39,4 +38,11 @@ public interface DishMapper {
     //修改菜品
     @AutoFill(value = OperationType.UPDATE)
     void update(Dish dish);
+
+    //根据id搜索菜品类别 该菜品必须启售
+    @Select("SELECT * FROM dish WHERE category_id = #{categoryId} and status = 1")
+    List<Dish> list(Long categoryId);
+
+    @Select("SELECT * FROM dish WHERE id = #{id};")
+    List<Dish> getSetmealById(Long id);
 }

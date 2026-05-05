@@ -10,6 +10,8 @@ public enum OperationType {
      */
     UPDATE,
 
+    // 删除操作
+    DELETE,
     /**
      * 插入操作
      */

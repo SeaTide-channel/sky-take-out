@@ -1,17 +1,40 @@
 package com.sky.mapper;
 
+import com.github.pagehelper.Page;
+import com.sky.annotation.AutoFill;
+import com.sky.dto.SetmealDTO;
+import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
+import com.sky.enumeration.OperationType;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface SetmealMapper {
 
-    /**
-     * 根据分类id查询套餐的数量
-     * @param id
-     * @return
-     */
+    //根据分类id查询套餐的数量
     @Select("select count(id) from setmeal where category_id = #{categoryId}")
     Integer countByCategoryId(Long id);
 
+    //添加套餐数据
+    @AutoFill(value = OperationType.INSERT)
+    void insert(Setmeal setmealDTO);
+
+    //根据id查询套餐数据
+    @Select("select * from setmeal where id = #{id}")
+    SetmealDTO getById(Long id);
+
+    //根据套餐id分页查询套餐 没有的时候全部套餐查询
+    Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    //批量删除套餐
+    void deleteBatch(List<Long> ids);
+
+    //修改套餐数据 (包含开关起售套餐)
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }

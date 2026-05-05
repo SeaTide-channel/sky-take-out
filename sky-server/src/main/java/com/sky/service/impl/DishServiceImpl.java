@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.j2objc.annotations.AutoreleasePool;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
@@ -37,6 +38,17 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+
+
+    //根据类型id搜索菜品
+    public List<Dish> list(Long categoryId){
+        if(categoryId==null)return null;
+
+        //将查询到的菜品返还
+        List<Dish> dishes = dishMapper.list(categoryId);//查询该分类下的所有菜品
+        return dishes != null? dishes : List.of();//避免返回null
+    }
+
 
     @Transactional
     public void saveWithFlavor(DishDTO dishDTO) {

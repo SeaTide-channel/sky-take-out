@@ -23,4 +23,7 @@ public interface DishService {
 
     //修改菜品
     void updateWithFlavor(DishDTO dishDTO);
+
+    //根据类型id搜索菜品
+    List<Dish> list(Long categoryId);
 }
