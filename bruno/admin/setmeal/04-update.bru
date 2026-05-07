@@ -1,0 +1,45 @@
+meta {
+  name: 04-update
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/admin/setmeal
+  body: json
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+body:json {
+  {
+    "id": {{newSetmealId}},
+    "categoryId": 13,
+    "name": "{{saveSetmealName}}",
+    "price": 108,
+    "status": 1,
+    "description": "Bruno 修改后的描述",
+    "image": "https://sky-itcast.oss-cn-beijing.aliyuncs.com/41bfcacf-7ad4-4927-8b26-df366553a94c.png",
+    "setmealDishes": [
+      { "dishId": 46, "name": "王老吉", "price": 6, "copies": 1 },
+      { "dishId": 47, "name": "北冰洋", "price": 4, "copies": 2 }
+    ]
+  }
+}
+
+docs {
+  ~ TC-06：修改套餐（默认 id={{newSetmealId}}=1000，须在 save 成功后执行）
+  ~ 若仅跑种子未新增，可将 newSetmealId 改为 101 做联调（会改种子数据）
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功", function() {
+    expect(res.getBody().code).to.equal(1);
+  });
+}

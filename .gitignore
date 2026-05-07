@@ -1,3 +1,5 @@
+mysql/.env
+
 **/target/
 .idea
 *.iml

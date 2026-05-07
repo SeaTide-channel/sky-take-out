@@ -1,0 +1,43 @@
+meta {
+  name: 03-save
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/admin/setmeal
+  body: json
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+body:json {
+  {
+    "categoryId": 13,
+    "name": "{{saveSetmealName}}",
+    "price": 99,
+    "description": "Bruno 新增套餐（与种子不冲突）",
+    "image": "https://sky-itcast.oss-cn-beijing.aliyuncs.com/41bfcacf-7ad4-4927-8b26-df366553a94c.png",
+    "setmealDishes": [
+      { "dishId": 46, "name": "王老吉", "price": 6, "copies": 2 },
+      { "dishId": 47, "name": "北冰洋", "price": 4, "copies": 1 }
+    ]
+  }
+}
+
+docs {
+  ~ TC-05：新增套餐（执行前种子脚本已将 setmeal 自增重置为 1000，首条新增 id 为 1000）
+  ~ 环境变量 saveSetmealName 须全局唯一；重复名将触发名称冲突错误
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功", function() {
+    expect(res.getBody().code).to.equal(1);
+  });
+}

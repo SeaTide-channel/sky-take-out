@@ -1,0 +1,29 @@
+meta {
+  name: 05-delete
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/admin/setmeal?ids={{deleteSetmealId}}
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+docs {
+  ~ TC-07：批量删除（query：ids，单个 id 写法同上）
+  ~ 默认 deleteSetmealId=103；后端对「起售中」套餐也会执行删除，详见接口文档
+  ~ 删除 save 新建的套餐时，把 deleteSetmealId 改为 1000（且勿与 update 顺序冲突）
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功", function() {
+    expect(res.getBody().code).to.equal(1);
+  });
+}

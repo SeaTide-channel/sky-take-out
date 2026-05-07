@@ -1,0 +1,28 @@
+meta {
+  name: 00-page
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/admin/setmeal/page?page=1&pageSize=10&name=双人
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+docs {
+  ~ TC-01：分页查询（名称模糊「双人」，命中种子 101「双人饮品套餐」）
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功 code=1", function() {
+    const body = res.getBody();
+    expect(body.code).to.equal(1);
+  });
+}

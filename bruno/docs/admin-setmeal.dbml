@@ -1,0 +1,44 @@
+// admin-setmeal.dbml — 套餐相关两张表（与 mysql/01_sky.sql 一致）
+// 导入：https://dbdiagram.io （Import → Paste DBML）
+
+Project sky_take_out_setmeal {
+  database_type: "MySQL"
+  Note: '''
+    Sky Take-Out 套餐模块：setmeal（套餐主表）与 setmeal_dish（套餐-菜品关联）。
+    逻辑上 setmeal_dish.dish_id 指向 dish.id；此处仅画套餐侧两张表的关系。
+  '''
+}
+
+Table setmeal as "套餐 setmeal" {
+  id bigint [pk, increment, note: '主键']
+  category_id bigint [not null, note: '菜品/套餐分类 id（对应 category）']
+  name varchar(32) [not null, note: '套餐名称，全局唯一']
+  price decimal(10,2) [not null, note: '套餐价格']
+  status int [default: 1, note: '0 停售 / 1 起售']
+  description varchar(255) [note: '描述']
+  image varchar(255) [note: '图片 URL']
+  create_time datetime [note: '创建时间']
+  update_time datetime [note: '更新时间']
+  create_user bigint [note: '创建人 employee id']
+  update_user bigint [note: '修改人 employee id']
+
+  Indexes {
+    (name) [unique, name: 'idx_setmeal_name']
+  }
+
+  Note: "COMMENT='套餐'"
+}
+
+Table setmeal_dish as "套餐菜品关系 setmeal_dish" {
+  id bigint [pk, increment, note: '主键']
+  setmeal_id bigint [note: '套餐 id → setmeal.id']
+  dish_id bigint [note: '菜品 id → dish.id（冗余关联）']
+  name varchar(32) [note: '菜品名称快照']
+  price decimal(10,2) [note: '菜品单价快照']
+  copies int [note: '份数']
+
+  Note: "COMMENT='套餐菜品关系'"
+}
+
+// 一对多：一个套餐包含多条菜品关联行
+Ref: setmeal_dish.setmeal_id > setmeal.id

@@ -1,0 +1,28 @@
+meta {
+  name: 02-status
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/admin/setmeal/status/{{status}}?id={{setmealIdStopped}}
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+docs {
+  ~ TC-03：启停（默认 status=1 启售、id={{setmealIdStopped}}=103 种子「停售」套餐）
+  ~ 若要停售：将环境变量 status 改为 0
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功", function() {
+    expect(res.getBody().code).to.equal(1);
+  });
+}

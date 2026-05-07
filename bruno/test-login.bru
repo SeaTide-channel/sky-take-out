@@ -1,0 +1,18 @@
+meta {
+  name: test-login
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/admin/employee/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "{{process.env.SKY_ADMIN_USERNAME}}",
+    "password": "{{process.env.SKY_ADMIN_PASSWORD}}"
+  }
+}

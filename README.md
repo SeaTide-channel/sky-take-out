@@ -99,6 +99,12 @@ mvn spring-boot:run
 
 服务启动后访问：http://localhost:8080
 
+如果在 `sky-server` 目录单独执行 `mvn spring-boot:run` 时出现 `Could not find artifact com.sky:sky-common` / `sky-pojo`（兄弟模块尚未安装到本机 Maven 仓库 `~/.m2`），请先在仓库根目录 `sky-take-out` 执行：
+
+```bash
+mvn clean install -DskipTests
+```
+
 ### API 文档
 
 启动后访问 Swagger UI：http://localhost:8080/swagger-ui.html

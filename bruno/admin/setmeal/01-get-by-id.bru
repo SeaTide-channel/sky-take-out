@@ -1,0 +1,29 @@
+meta {
+  name: 01-get-by-id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/admin/setmeal/{{setmealId}}
+  auth: none
+}
+
+headers {
+  token: {{process.env.SKY_ADMIN_TOKEN}}
+}
+
+docs {
+  ~ TC-02：按 id 查询详情（默认 {{setmealId}}=101，含 setmealDishes 两条）
+}
+
+tests {
+  test("HTTP 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("业务成功且含套餐名", function() {
+    const body = res.getBody();
+    expect(body.code).to.equal(1);
+    expect(body.data.name).to.equal("双人饮品套餐");
+  });
+}
