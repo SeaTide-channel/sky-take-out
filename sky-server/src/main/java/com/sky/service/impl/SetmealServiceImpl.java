@@ -149,7 +149,7 @@ public class SetmealServiceImpl implements SetmealService {
 
             List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
             if(setmealDishes != null && setmealDishes.size() > 0){
-                for (SetmealDish setmealDish : setmealDishes ) setmealDish.setSetmealId(setmealId);
+                for (SetmealDish setmealDish : setmealDishes ) setmealDish.setSetmealId(setmealId);//添加套餐ID
                 setmealDishMapper.insertBatch(setmealDishes);
             }
         }
