@@ -41,7 +41,7 @@ public interface DishMapper {
 
     //根据id搜索菜品类别 该菜品必须启售
     @Select("SELECT * FROM dish WHERE category_id = #{categoryId} and status = 1")
-    List<Dish> list(Long categoryId);
+    List<Dish> list(Dish categoryId);
 
     @Select("SELECT * FROM dish WHERE id = #{id};")
     List<Dish> getSetmealById(Long id);
