@@ -43,6 +43,7 @@ public interface DishMapper {
     @Select("SELECT * FROM dish WHERE category_id = #{categoryId} and status = 1")
     List<Dish> list(Dish categoryId);
 
+    //用户端根据套餐id查询套餐内的菜品
     @Select("SELECT * FROM dish WHERE id = #{id};")
     List<Dish> getSetmealById(Long id);
 }

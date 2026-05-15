@@ -29,4 +29,7 @@ public interface DishService {
 
     //根据分类id查询菜品
     List<DishVO> listWithFlavor(Dish dish);
+
+    //设置菜品是否起售
+    void startOrStop(Integer status, Long id);
 }
