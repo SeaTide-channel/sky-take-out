@@ -89,7 +89,7 @@
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-stater-data-redis</artifactId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
             </dependency>
 
             <dependency>
