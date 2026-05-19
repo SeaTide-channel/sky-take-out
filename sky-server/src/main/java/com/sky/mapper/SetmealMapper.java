@@ -27,7 +27,7 @@ public interface SetmealMapper {
 
     //根据id查询套餐数据
     @Select("select * from setmeal where id = #{id}")
-    SetmealDTO getById(Long id);
+    Setmeal getById(Long id);
 
     //根据套餐id分页查询套餐 没有的时候全部套餐查询
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);

@@ -100,16 +100,20 @@ public class SetmealServiceImpl implements SetmealService {
     public SetmealDTO getById(Long id) {
         log.info("根据ID查询套餐: id={}", id);
         //创建DTO获取套餐数据(不包括套餐内的菜品)
-        SetmealDTO setmealDTO = setmealMapper.getById(id);
-        log.info("查询到的套餐基本信息: {}", setmealDTO);
+        Setmeal setmeal = setmealMapper.getById(id);
+        log.info("查询到的套餐基本信息: {}", setmeal);
+
+        SetmealDTO setmealDTO = new SetmealDTO();
+        BeanUtils.copyProperties(setmeal, setmealDTO);
 
         //获取套餐内菜品数据
-        if(setmealDTO !=null){
+        if(setmeal !=null){
            List<SetmealDish> setmealDishes = setmealDishMapper.getSetmealById(id);
-           setmealDTO.setSetmealDishes(setmealDishes);
+
+            setmealDTO.setSetmealDishes(setmealDishes);
         }
 
-        log.info("========== 最终返回的套餐数据: {} ==========", setmealDTO);
+        log.info("========== 最终返回的套餐数据: {} ==========", setmeal);
         return setmealDTO;
     }
 
