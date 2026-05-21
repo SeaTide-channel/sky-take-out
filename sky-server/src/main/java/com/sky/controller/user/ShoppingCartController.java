@@ -25,7 +25,7 @@ public class ShoppingCartController {
     @Autowired
     private ShoppingCartService shoppingCartService;
 
-
+    //往购物车内添加商品
     @PostMapping("/add")
     @ApiOperation("添加购物车")
     public Result add(@RequestBody ShoppingCartDTO shoppingCartDTO){
@@ -49,6 +49,15 @@ public class ShoppingCartController {
     public Result clean(){
         log.info("清空购物车内容");
         shoppingCartService.clean();
+        return Result.success();
+    }
+
+    //减少购物车内的商品
+    @PostMapping("/sub")
+    @ApiOperation("减少购物车商品")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO){
+        log.info("减少购物车商品：{}", shoppingCartDTO);
+        shoppingCartService.sub(shoppingCartDTO);
         return Result.success();
     }
 }
