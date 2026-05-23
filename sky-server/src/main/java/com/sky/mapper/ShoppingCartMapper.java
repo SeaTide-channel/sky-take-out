@@ -24,7 +24,7 @@ public interface ShoppingCartMapper {
     @Delete("delete from shopping_cart where user_id = #{userId}")
     void deleteByUserId(Long userId);
 
-    //根据id查询购物车内菜品
+    //根据用户id查询购物车内菜品
     @Select("select * from shopping_cart where id = #{id}")
     ShoppingCart getById(Long id);
 
