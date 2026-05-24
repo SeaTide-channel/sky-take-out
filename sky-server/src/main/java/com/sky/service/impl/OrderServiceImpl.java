@@ -213,6 +213,10 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(ordersRejectionDTO, orders);
         orders.setStatus(Orders.CANCELLED);
         orders.setPayStatus(Orders.REFUND);
+        //拒单原因
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setCancelReason(ordersRejectionDTO.getRejectionReason());
+
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
@@ -223,6 +227,9 @@ public class OrderServiceImpl implements OrderService {
         BeanUtils.copyProperties(ordersCancelDTO, orders);
         orders.setStatus(Orders.CANCELLED);
         orders.setPayStatus(Orders.REFUND);
+        //取消订单原因
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
 
