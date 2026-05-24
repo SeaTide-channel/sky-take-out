@@ -8,11 +8,11 @@
         from orders o
         left join order_detail od on od.order_id = o.id
         <where>
-            <if test="beginTime != null and beginTime != ''">
-                and o.number like concat('%',#{beginTime},'%')
+            <if test="beginTime != null">
+                and o.order_time >= #{beginTime}
             </if>
-            <if test="endTime != null and endTime != ''">
-                and o.checkout_time >= #{endTime}
+            <if test="endTime != null">
+                and #{endTime} >= o.order_time
             </if>
             <if test="number != null and number != ''">
                 and o.number like concat('%',#{number},'%')

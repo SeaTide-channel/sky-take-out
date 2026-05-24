@@ -42,6 +42,12 @@ public interface OrderMapper {
     @Select("select * from orders where id = #{id}")
     OrderVO getDetailsById(Long id);
 
+    //根据id查询订单信息
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
+
+    //根据数字status查询各个状态的订单数量
+    @Select("select count(id) from orders where status = #{status}")
+    Integer countStatus(Integer status);
+
 }

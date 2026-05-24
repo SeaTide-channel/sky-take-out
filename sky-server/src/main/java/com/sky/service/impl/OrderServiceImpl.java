@@ -6,9 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
@@ -16,6 +14,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
@@ -137,8 +136,11 @@ public class OrderServiceImpl implements OrderService {
 
         //给列表中每个套餐添加地址
         List<Orders> ordersList = page.getResult();
+
+        //遍历列表
         for(Orders order : ordersList){
             AddressBook addressBook = addressBookMapper.getById(order.getAddressBookId());
+            //设置订单的地址
             order.setAddress(addressBook.getProvinceName()
                     +addressBook.getCityName()
                     +addressBook.getDistrictName()
@@ -179,12 +181,14 @@ public class OrderServiceImpl implements OrderService {
         //封装订单信息
             //根据套餐id获取套餐信息
         Orders orders = orderMapper.getById(id);
-        String provinceName = addressBookMapper.getById(orders.getAddressBookId()).getProvinceName();
-        String cityName = addressBookMapper.getById(orders.getAddressBookId()).getCityName();
-        String districtName = addressBookMapper.getById(orders.getAddressBookId()).getDistrictName();
-        String detail = addressBookMapper.getById(orders.getAddressBookId()).getDetail();
+        AddressBook addressBook = addressBookMapper.getById(orders.getAddressBookId());
 
-        orderVO.setAddress(provinceName + cityName + districtName + detail);
+        String address = addressBook.getProvinceName()
+                + addressBook.getCityName()
+                + addressBook.getDistrictName()
+                + addressBook.getDetail();
+        orderVO.setAddress(address);
+
         orderVO.setUserName(userMapper.getById(orders.getUserId()).getName());
         orderVO.setPhone(userMapper.getById(orders.getUserId()).getPhone());
         orderVO.setOrderTime(orders.getOrderTime());
@@ -193,9 +197,64 @@ public class OrderServiceImpl implements OrderService {
         return orderVO;
     }
 
+    //接单
+    public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
+        Orders orders = Orders.builder()
+                .id(ordersConfirmDTO.getId())
+                .status(Orders.CONFIRMED)
+                .build();
 
-    public void cancelOrder(Orders orders) {
         orderMapper.update(orders);
     }
 
+    //拒单
+    public void rejection(OrdersRejectionDTO ordersRejectionDTO) {
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersRejectionDTO, orders);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setPayStatus(Orders.REFUND);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+    }
+
+    //取消订单
+    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        Orders orders = new Orders();
+        BeanUtils.copyProperties(ordersCancelDTO, orders);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setPayStatus(Orders.REFUND);
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
+
+    }
+
+    //派送订单
+    public void delivery(Long id){
+        Orders orders = Orders.builder()
+                .id(id)
+                .status(Orders.DELIVERY_IN_PROGRESS)
+                .deliveryTime(LocalDateTime.now())
+                .build();
+        orderMapper.update(orders);
+    }
+
+    //完成订单
+    public void complete(Long id){
+        Orders orders = Orders.builder()
+                .id(id)
+                .status(Orders.COMPLETED)
+                .checkoutTime(LocalDateTime.now())
+                .build();
+        orderMapper.update(orders);
+    }
+
+    //各个状态的订单数量统计
+    public OrderStatisticsVO statistics(){
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setToBeConfirmed(orderMapper.countStatus(Orders.TO_BE_CONFIRMED));
+        orderStatisticsVO.setConfirmed(orderMapper.countStatus(Orders.CONFIRMED));
+        orderStatisticsVO.setDeliveryInProgress( orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS));
+
+        return orderStatisticsVO;
+    }
 }

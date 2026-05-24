@@ -18,4 +18,5 @@ public interface OrderDetailMapper {
     //根据订单id查询订单内的商品
     @Select("select * from order_detail where order_id = #{id}")
     List<OrderDetail> listById(Long id);
+
 }
