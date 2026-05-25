@@ -17,14 +17,17 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -130,6 +133,7 @@ public class OrderServiceImpl implements OrderService {
 
     //订单分页查询
     public PageResult pageQuery(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //开启分页
         PageHelper.startPage(ordersPageQueryDTO.getPage(),ordersPageQueryDTO.getPageSize());
         //下一条sql进行分页，自动加入limit关键字分页
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
@@ -263,5 +267,68 @@ public class OrderServiceImpl implements OrderService {
         orderStatisticsVO.setDeliveryInProgress( orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS));
 
         return orderStatisticsVO;
+    }
+
+    //用户端
+
+    //用户催单
+    public void reminder(Long id) {
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
+
+        orderMapper.update(orders);
+    }
+
+    //用户点击"再来一单"
+    public void repetition(Long id) {
+        //获取用户唯一识别码id
+        Long userId = BaseContext.getCurrentId();
+
+        List<OrderDetail> orderDetailList = orderDetailMapper.listById(id);
+        for (OrderDetail orderDetail : orderDetailList) {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, shoppingCart);
+            shoppingCart.setUserId(userId);
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            shoppingCartMapper.insert(shoppingCart);
+        }
+    }
+
+    //用户查询历史订单
+    public PageResult pageQueryUser(int page, int pageSize, Integer status) {
+        //获取用户id
+        Long userId = BaseContext.getCurrentId();
+
+        //开启分页
+        PageHelper.startPage(page, pageSize);
+
+        //查询该用户的所有订单
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setUserId(userId);
+        ordersPageQueryDTO.setPage(page);
+        ordersPageQueryDTO.setPageSize(pageSize);
+        ordersPageQueryDTO.setStatus(status);
+
+        Page<Orders> ordersList = orderMapper.pageQuery(ordersPageQueryDTO);//分页查询前的准备信息
+
+        List<OrderVO> orderVOList = new ArrayList<>();//封装的订单信息
+
+        //如果订单不为空 则进行封装
+        if(ordersList != null && ordersList.size() > 0) {
+
+            //查询出每个订单的订单详情并封装到orderVO中
+            for(Orders orders : ordersList) {
+                List<OrderDetail> orderDetailList = orderDetailMapper.listById(orders.getId());
+
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                orderVO.setOrderDetailList(orderDetailList);
+                orderVOList.add(orderVO);
+            }
+        }else{
+            return new PageResult(0, null);
+        }
+        return new PageResult(ordersList.getTotal(), orderVOList);
     }
 }

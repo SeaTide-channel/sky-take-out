@@ -43,4 +43,13 @@ public interface OrderService {
 
     //订单统计
     OrderStatisticsVO statistics();
+
+    //订单催单
+    void reminder(Long id);
+
+    //用户点击"再来一单"
+    void repetition(Long id);
+    
+    //用户分页查询
+    PageResult pageQueryUser(int page, int pageSize, Integer status);
 }

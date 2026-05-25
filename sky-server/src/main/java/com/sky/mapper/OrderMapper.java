@@ -38,11 +38,11 @@ public interface OrderMapper {
      */
     void update(Orders orders);
 
-    //根据id查询订单信息
+    //根据id查询订单内菜品与备注之类的信息
     @Select("select * from orders where id = #{id}")
     OrderVO getDetailsById(Long id);
 
-    //根据id查询订单信息
+    //根据id查询订单的下单信息
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
