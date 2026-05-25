@@ -228,6 +228,18 @@ public class OrderServiceImpl implements OrderService {
     //取消订单
     public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
         Orders orders = new Orders();
+        // 校验订单是否存在
+        Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
+
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态 1待付款 2待接单 3已接单 4派送中 5已完成 6已取消
+        if (ordersDB.getStatus() > 2) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
         BeanUtils.copyProperties(ordersCancelDTO, orders);
         orders.setStatus(Orders.CANCELLED);
         orders.setPayStatus(Orders.REFUND);
