@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
@@ -17,7 +16,6 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -57,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
                 .userId(userId)
                 .build();
         List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(queryCart);
-        if(shoppingCartList == null && shoppingCartList.size() == 0)throw new RuntimeException(MessageConstant.SHOPPING_CART_IS_NULL);
+        if(shoppingCartList == null || shoppingCartList.size() == 0)throw new RuntimeException(MessageConstant.SHOPPING_CART_IS_NULL);
 
         //插入订单数据
         Orders orders = new Orders();
@@ -88,13 +85,12 @@ public class OrderServiceImpl implements OrderService {
         shoppingCartMapper.deleteByUserId(userId);
 
         //返回数据
-        OrderSubmitVO orderSubmitVO = OrderSubmitVO.builder()
+        return OrderSubmitVO.builder()
                 .id(orders.getId())
                 .orderTime(orders.getOrderTime())
                 .orderNumber(orders.getNumber())
                 .orderAmount(orders.getAmount())
                 .build();
-        return orderSubmitVO;
     }
 
 
@@ -303,6 +299,7 @@ public class OrderServiceImpl implements OrderService {
             BeanUtils.copyProperties(orderDetail, shoppingCart);
             shoppingCart.setUserId(userId);
             shoppingCart.setCreateTime(LocalDateTime.now());
+
             shoppingCartMapper.insert(shoppingCart);
         }
     }
