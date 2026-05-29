@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
@@ -16,17 +17,18 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
+@Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class OrderServiceImpl implements OrderService {
 
@@ -41,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private WeChatPayUtil weChatPayUtil;
+    private WebSocketServer webSocketServer;
 
 
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -114,14 +116,8 @@ public class OrderServiceImpl implements OrderService {
         if(Objects.equals(orderDB.getPayStatus(), Orders.PAID))throw new OrderBusinessException(MessageConstant.ORDER_PAID);
 
         //订单支付状态修改
-        Orders orders = Orders.builder()
-                .id(orderDB.getId())
-                .status(Orders.TO_BE_CONFIRMED)
-                .payMethod(ordersPaymentDTO.getPayMethod())
-                .payStatus(Orders.PAID)
-                .checkoutTime(LocalDateTime.now())
-                .build();
-        orderMapper.update(orders);
+//      //直接调用Paysuccess方法
+        paySuccess(String.valueOf(orderDB.getNumber()));
 
 
         return new OrderPaymentVO();
@@ -163,16 +159,35 @@ public class OrderServiceImpl implements OrderService {
         // 根据订单号查询订单
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
 
+        // 添加空值检查
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
         // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
         Orders orders = Orders.builder()
                 .id(ordersDB.getId())
-                .status(Orders.TO_BE_CONFIRMED) // 订单状态变为待派送
+                .status(Orders.TO_BE_CONFIRMED)
                 .payStatus(Orders.PAID)
                 .checkoutTime(LocalDateTime.now())
                 .build();
 
         orderMapper.update(orders);
+
+        //通过WebSocket向客户端推送消息
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", 1);
+            map.put("orderId", ordersDB.getId());
+            map.put("content", "支付成功");
+
+            String json = JSON.toJSONString(map);
+            webSocketServer.sendToAllClient(json);
+        } catch (Exception e) {
+            log.error("WebSocket推送失败，订单号：{}", outTradeNo, e);
+        }
     }
+
 
     //根据id查询订单信息和订单明细
     public OrderVO details(Long id) {
@@ -282,11 +297,21 @@ public class OrderServiceImpl implements OrderService {
 
     //用户催单
     public void reminder(Long id) {
-        Orders orders = new Orders();
-        orders.setId(id);
-        orders.setStatus(Orders.TO_BE_CONFIRMED);
+        Orders orders = orderMapper.getById(id);
+        if(orders == null)throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
 
-        orderMapper.update(orders);
+        //通过WebSocket向客户端推送消息 播报催单消息
+        try {
+            Map<String, Object> map = new HashMap<>();
+            map.put("type",2);
+            map.put("orderId", id);
+            map.put("content","订单号:"+id+"的订单被催啦~");
+            String json = JSON.toJSONString(map);
+
+            webSocketServer.sendToAllClient(json);
+        }catch(Exception e){
+            log.error("WebSocket推送失败，订单号：{}", id, e);
+        }
     }
 
     //用户点击"再来一单"
