@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -42,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+
 
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
         //处理订单数据异常
