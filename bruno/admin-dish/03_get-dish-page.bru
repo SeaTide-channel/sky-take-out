@@ -1,0 +1,23 @@
+meta {
+  name: get dish page 2
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/page?page=2&pageSize=12
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.total: eq 24
+  res.body.data.records: length 12
+  res.body.data.records[0].id: eq 57
+  res.body.data.records[0].name: eq 炝炒圆白菜
+  res.body.data.records[11].id: eq 46
+  res.body.data.records[11].name: eq 王老吉
+}

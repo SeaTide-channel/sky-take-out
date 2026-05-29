@@ -1,0 +1,26 @@
+meta {
+  name: get dish list category 11
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/list?categoryId=11
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: length 3
+  res.body.data[0].id: eq 46
+  res.body.data[0].name: eq 王老吉
+  res.body.data[0].categoryId: eq 11
+  res.body.data[0].status: eq 1
+  res.body.data[1].id: eq 47
+  res.body.data[1].name: eq 北冰洋
+  res.body.data[2].id: eq 48
+  res.body.data[2].name: eq 雪花啤酒
+}

@@ -1,0 +1,24 @@
+meta {
+  name: get dish cola id
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/page?name={{dishColaName}}&page=1&pageSize=10
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setEnvVar("dishColaId", res.getBody().data.records[0].id);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.total: eq 1
+  res.body.data.records[0].name: eq {{dishColaName}}
+  res.body.data.records[0].id: isDefined
+}

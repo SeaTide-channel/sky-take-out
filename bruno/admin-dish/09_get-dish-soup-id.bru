@@ -1,0 +1,25 @@
+meta {
+  name: get dish soup id
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/page?name={{dishSoupName}}&page=1&pageSize=10
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setEnvVar("dishSoupId", res.getBody().data.records[0].id);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.total: eq 1
+  res.body.data.records[0].name: eq {{dishSoupName}}
+  res.body.data.records[0].status: eq 1
+  res.body.data.records[0].id: isDefined
+}

@@ -1,0 +1,43 @@
+meta {
+  name: create dish corn rib soup
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/admin/dish
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+script:pre-request {
+  bru.setEnvVar("dishSoupName", "测试-玉米排骨汤");
+}
+
+body:json {
+  {
+    "categoryId": 21,
+    "name": "{{dishSoupName}}",
+    "price": 18.00,
+    "status": 1,
+    "description": "玉米排骨汤，分类：汤类",
+    "image": "https://picsum.photos/302",
+    "flavors": [
+      {
+        "name": "忌口",
+        "value": "[\"不要葱\",\"不要香菜\"]"
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

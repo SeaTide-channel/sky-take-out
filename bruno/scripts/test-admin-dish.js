@@ -10,20 +10,20 @@ async function main() {
 
   try {
     await resetDatabase();
-    console.log('[test:admin-setmeal] running bruno...');
+    console.log('[test:admin-dish] running bruno...');
 
     const result = spawnSync(
       'bru',
-      ['run', 'auth/employee-login.bru', 'admin-setmeal', '-r', '--env', 'local'],
+      ['run', 'auth/employee-login.bru', 'admin-dish', '-r', '--env', 'local'],
       { cwd: root, stdio: 'inherit', shell: true },
     );
 
     exitCode = result.status ?? 1;
   } catch (err) {
-    console.error('[test:admin-setmeal] failed:', err.message);
+    console.error('[test:admin-dish] failed:', err.message);
   } finally {
     await resetDatabase();
-    console.log('[test:admin-setmeal] database reset');
+    console.log('[test:admin-dish] database reset');
   }
 
   process.exit(exitCode);

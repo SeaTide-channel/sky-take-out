@@ -1,0 +1,43 @@
+meta {
+  name: update dish cola to pepsi
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/admin/dish
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+script:pre-request {
+  const body = {
+    id: Number(bru.getEnvVar("dishColaId")),
+    categoryId: 11,
+    name: "测试-百事可乐",
+    price: 5.00,
+    status: 1,
+    description: "冰镇百事可乐，分类：酒水饮料",
+    image: "https://picsum.photos/301",
+    flavors: [
+      {
+        name: "温度",
+        value: '["冰镇","常温"]',
+      },
+    ],
+  };
+
+  req.setBody(body);
+  bru.setEnvVar("dishColaName", body.name);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

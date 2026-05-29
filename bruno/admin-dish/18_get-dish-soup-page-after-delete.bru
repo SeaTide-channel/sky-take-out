@@ -1,0 +1,19 @@
+meta {
+  name: get dish soup page after delete
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/page?name={{dishSoupName}}&page=1&pageSize=10
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.total: eq 0
+  res.body.data.records: length 0
+}

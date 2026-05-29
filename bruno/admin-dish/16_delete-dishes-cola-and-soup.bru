@@ -1,0 +1,18 @@
+meta {
+  name: delete dishes cola and soup
+  type: http
+  seq: 16
+}
+
+delete {
+  url: {{baseUrl}}/admin/dish?ids={{dishColaId}},{{dishSoupId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

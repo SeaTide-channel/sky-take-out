@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "sky-admin-setmeal",
+  "name": "sky-take-out-admin",
   "type": "collection",
   "ignore": ["node_modules", ".git", ".env"]
 }

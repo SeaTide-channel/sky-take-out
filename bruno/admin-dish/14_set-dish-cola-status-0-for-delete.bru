@@ -1,0 +1,18 @@
+meta {
+  name: set dish cola status 0 for delete
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/admin/dish/status/0?id={{dishColaId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

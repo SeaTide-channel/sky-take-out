@@ -1,0 +1,18 @@
+meta {
+  name: set dish soup status 0 for delete
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{baseUrl}}/admin/dish/status/0?id={{dishSoupId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

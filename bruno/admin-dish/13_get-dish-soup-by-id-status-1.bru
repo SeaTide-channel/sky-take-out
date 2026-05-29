@@ -1,0 +1,23 @@
+meta {
+  name: get dish soup by id after status 1
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/admin/dish/{{dishSoupId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.id: eq {{dishSoupId}}
+  res.body.data.name: eq {{dishSoupName}}
+  res.body.data.status: eq 1
+  res.body.data.flavors: length 1
+  res.body.data.flavors[0].name: eq 忌口
+  res.body.data.flavors[0].value: eq ["不要葱","不要香菜"]
+}
