@@ -1,0 +1,27 @@
+meta {
+  name: get setmeal after update
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/admin/setmeal/{{setmealId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.data.id: eq {{setmealId}}
+  res.body.data.categoryId: eq 15
+  res.body.data.name: eq {{updatedSetmealName}}
+  res.body.data.price: eq 88
+  res.body.data.description: eq 更新后的描述
+  res.body.data.image: eq https://picsum.photos/300
+  res.body.data.status: eq 1
+  res.body.data.setmealDishes[0].dishId: eq 51
+  res.body.data.setmealDishes[1].dishId: eq 49
+  res.body.data.setmealDishes[2].dishId: eq 46
+  res.body.data.setmealDishes: length 3
+}

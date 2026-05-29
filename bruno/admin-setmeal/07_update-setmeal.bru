@@ -1,0 +1,45 @@
+meta {
+  name: update setmeal
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/admin/setmeal
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+script:pre-request {
+  const data = JSON.parse(bru.getEnvVar("setmealSnapshot"));
+  const body = {
+    id: data.id,
+    categoryId: 15,
+    name: "测试-商务套餐升级版",
+    price: 88,
+    description: "更新后的描述",
+    image: "https://picsum.photos/300",
+    setmealDishes: data.setmealDishes.map((dish) => ({
+      id: dish.id,
+      setmealId: dish.setmealId,
+      dishId: dish.dishId,
+      name: dish.name,
+      price: dish.price,
+      copies: dish.copies,
+    })),
+  };
+
+  req.setBody(body);
+  bru.setEnvVar("updatedSetmealName", body.name);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

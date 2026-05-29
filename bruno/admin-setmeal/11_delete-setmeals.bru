@@ -1,0 +1,18 @@
+meta {
+  name: delete setmeals
+  type: http
+  seq: 11
+}
+
+delete {
+  url: {{baseUrl}}/admin/setmeal?ids={{setmealId}},{{setmealId2}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

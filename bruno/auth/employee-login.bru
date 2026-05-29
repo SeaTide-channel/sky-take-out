@@ -1,0 +1,36 @@
+meta {
+  name: employee login
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/admin/employee/login
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "username": "admin",
+    "password": "123456"
+  }
+}
+
+script:post-response {
+  bru.setEnvVar("token", res.body.data.token);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data.id: eq 1
+  res.body.data.userName: eq admin
+  res.body.data.name: eq 管理员
+  res.body.data.token: matches ^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$
+}

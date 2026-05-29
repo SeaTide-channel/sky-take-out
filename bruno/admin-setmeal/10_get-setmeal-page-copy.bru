@@ -1,0 +1,23 @@
+meta {
+  name: get setmeal page copy
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/admin/setmeal/page?name={{setmealName2}}&page=1&pageSize=10
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setEnvVar("setmealId2", res.getBody().data.records[0].id);
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.data.total: eq 1
+  res.body.data.records[0].name: eq {{setmealName2}}
+  res.body.data.records[0].id: isDefined
+}

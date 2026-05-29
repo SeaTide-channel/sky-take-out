@@ -1,0 +1,22 @@
+meta {
+  name: get setmeal by id after status 1
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/admin/setmeal/{{setmealId}}
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  bru.setEnvVar("setmealSnapshot", JSON.stringify(res.getBody().data));
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.data.id: isDefined
+  res.body.data.status: eq 1
+}

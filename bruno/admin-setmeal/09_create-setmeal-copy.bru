@@ -1,0 +1,57 @@
+meta {
+  name: create setmeal copy
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/admin/setmeal
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+script:pre-request {
+  bru.setEnvVar("setmealName2", "测试-超值酸菜鱼单人套餐-副本");
+}
+
+body:json {
+  {
+    "categoryId": 13,
+    "name": "{{setmealName2}}",
+    "price": 58.00,
+    "status": 1,
+    "description": "爆款老坛酸菜鱼，精选五常大米饭，再来一罐冰镇王老吉，单人超值首选！",
+    "image": "https://picsum.photos/300",
+    "setmealDishes": [
+      {
+        "dishId": 51,
+        "name": "老坛酸菜鱼",
+        "price": 56.00,
+        "copies": 1
+      },
+      {
+        "dishId": 49,
+        "name": "米饭",
+        "price": 2.00,
+        "copies": 1
+      },
+      {
+        "dishId": 46,
+        "name": "王老吉",
+        "price": 6.00,
+        "copies": 1
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}

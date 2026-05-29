@@ -1,0 +1,15 @@
+{
+  "name": "bruno-admin-setmeal",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:drop": "node scripts/db.js drop",
+    "db:import": "node scripts/db.js import",
+    "db:reset": "node scripts/db.js reset",
+    "test:admin-setmeal": "node scripts/test-admin-setmeal.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "mysql2": "^3.14.1"
+  }
+}

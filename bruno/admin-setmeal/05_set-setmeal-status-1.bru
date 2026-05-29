@@ -1,0 +1,18 @@
+meta {
+  name: set setmeal status 1
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/admin/setmeal/status/1?id={{setmealId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+  res.body.code: eq 1
+  res.body.msg: isNull
+  res.body.data: isNull
+}
